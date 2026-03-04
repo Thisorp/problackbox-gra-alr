@@ -1,0 +1,4 @@
+sudo mkdir -p /data/monitoring/{prometheus,alertmanager,grafana}
+sudo chown -R 65534:65534 /data/monitoring/prometheus
+sudo chown -R 65534:65534 /data/monitoring/alertmanager
+sudo chown -R 472:472 /data/monitoring/grafana
