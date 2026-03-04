@@ -1,0 +1,5 @@
+- targets:
+  # - example.com:22
+  # - example.com:443
+  labels:
+    group: tcp

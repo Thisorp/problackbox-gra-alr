@@ -1,0 +1,9 @@
+# - targets:
+#   - https://google.com
+#   - https://my.vnpost.vn
+#   - https://portalkhl.vnpost.vn
+#   - https://facebook.com
+#   - https://uat-scm.vnpost.vn
+#   - https://zabbix.vnpost.vn
+#   labels:
+#     group: public

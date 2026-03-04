@@ -1,0 +1,4 @@
+- targets:
+  # - grpc.example.com:443
+  labels:
+    group: grpc

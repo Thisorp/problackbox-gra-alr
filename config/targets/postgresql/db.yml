@@ -1,0 +1,4 @@
+- targets:
+  # - db.example.com:5432
+  labels:
+    group: postgresql
