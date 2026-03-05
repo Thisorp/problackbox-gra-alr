@@ -1,9 +1,13 @@
 services:
   prometheus:
-    image: prom/prometheus
+    image: prom/prometheus:v3
     restart: always
     command:
       - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention.time=30d'
+      - '--storage.tsdb.retention.size=100GB'
+      - '--storage.tsdb.wal-compression'
       - '--web.enable-lifecycle'
     volumes:
       - /data/monitoring/prometheus:/prometheus
@@ -14,7 +18,7 @@ services:
       - "9090:9090"
 
   alertmanager:
-    image: prom/alertmanager
+    image: prom/alertmanager:v0.31.1
     restart: always
     ports:
       - "9093:9093"
@@ -25,7 +29,7 @@ services:
       - prometheus
 
   blackbox_exporter:
-    image: prom/blackbox-exporter
+    image: prom/blackbox-exporter:v0.28.0
     restart: always
     tty: true
     ports:
@@ -39,7 +43,7 @@ services:
       - NET_ADMIN
 
   grafana:
-    image: grafana/grafana-enterprise
+    image: grafana/grafana-enterprise:13.0.0-22649226721-boringcrypto
     restart: always
     tty: true
     ports:
