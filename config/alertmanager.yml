@@ -1,35 +1,25 @@
 global:
   resolve_timeout: 1m
-  slack_api_url: 'https://hooks.slack.com/services/xx/xx/xx' # Slack webhook url
+
+templates:
+  - '/etc/alertmanager/telegram.tmpl'
 
 route:
-  receiver: 'slack-notifications'
+  receiver: 'telegram-notifications'
+  group_by:
+    - alertname
+    - instance
+
+  group_wait: 10s
+  group_interval: 1m
+  repeat_interval: 30m
 
 receivers:
-  - name: 'slack-notifications'
-    slack_configs:
-      - channel: 'test'
+
+  - name: telegram-notifications
+    telegram_configs:
+      - bot_token: '8633751904:AAFaIA1RIe00MnblWaedvSeip44bxlFluws'
+        chat_id: -5232704577
+        parse_mode: 'HTML'
+        message: '{{ template "telegram.message" . }}'
         send_resolved: true
-        icon_url: https://avatars3.githubusercontent.com/u/3380462
-        title: |-
-          [{{ .Status | toUpper }}{{ if eq .Status "firing" }}:{{ .Alerts.Firing | len }}{{ end }}] {{ .CommonLabels.alertname }} for {{ .CommonLabels.job }}
-          {{- if gt (len .CommonLabels) (len .GroupLabels) -}}
-            {{" "}}(
-            {{- with .CommonLabels.Remove .GroupLabels.Names }}
-              {{- range $index, $label := .SortedPairs -}}
-                {{ if $index }}, {{ end }}
-                {{- $label.Name }}="{{ $label.Value -}}"
-              {{- end }}
-            {{- end -}}
-            )
-          {{- end }}
-        text: >-
-          {{ range .Alerts -}}
-          *Alert:* {{ .Annotations.title }}{{ if .Labels.severity }} - `{{ .Labels.severity }}`{{ end }}
-
-          *Description:* {{ .Annotations.description }}
-
-          *Details:*
-            {{ range .Labels.SortedPairs }} • *{{ .Name }}:* `{{ .Value }}`
-            {{ end }}
-          {{ end }}

@@ -25,6 +25,12 @@ services:
     volumes:
       - /data/monitoring/alertmanager/:/alertmanager/
       - ./config/alertmanager.yml:/etc/alertmanager/alertmanager.yml
+      - ./config/alert/telegram.tmpl:/etc/alertmanager/telegram.tmpl
+    env_file:
+      - ./config/alert/.env
+    command:
+      - '--config.file=/etc/alertmanager/alertmanager.yml'
+      - '--storage.path=/alertmanager'
     depends_on:
       - prometheus
 
@@ -38,6 +44,8 @@ services:
     command: --config.file=/etc/blackbox/blackbox.yml
     volumes:
       - ./config/blackbox/:/etc/blackbox/
+    extra_hosts:
+      - "gateway.vnpost.vn:172.16.254.73"
     cap_add:
       - NET_RAW
       - NET_ADMIN

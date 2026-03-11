@@ -1,14 +1,90 @@
 groups:
-  - name: AllInstances
-    rules:
-      - alert: InstanceDown
-        # Condition for alerting
-        expr: probe_success == 0
-        for: 5s
-        # Annotation - additional informational labels to store more information
-        annotations:
-          title: 'Instance {{ $labels.instance }} down'
-          description: '{{ $labels.instance }} of job {{ $labels.job }} has been down for more than 5 seconds.'
-        # Labels - additional labels to be attached to the alert
-        labels:
-          severity: 'critical'
+
+# =============================
+# CRITICAL ALERTS
+# =============================
+
+- name: blackbox-critical
+  rules:
+
+  - alert: BlackboxProbeFailed
+    expr: probe_success == 0
+    for: 1m
+    labels:
+      severity: critical
+      team: QTHT
+      environment: production
+    annotations:
+      summary: "Service unreachable"
+      description: |
+        Service: {{ $labels.instance }}
+        Job: {{ $labels.job }}
+
+        Blackbox probe failed.
+        Target is unreachable.
+
+  - alert: BlackboxHTTPStatusNot200
+    expr: probe_http_status_code != 200 and probe_http_status_code != 403
+    for: 1m
+    labels:
+      severity: critical
+      team: QTHT
+      environment: production
+    annotations:
+      summary: "HTTP status not OK"
+      description: |
+        Service: {{ $labels.instance }}
+
+        HTTP Status Code: {{ $value }}
+
+        Expected status: 200 or 403
+
+  - alert: BlackboxSSLExpired
+    expr: probe_ssl_earliest_cert_expiry - time() <= 0
+    for: 10m
+    labels:
+      severity: critical
+      team: QTHT
+      environment: production
+    annotations:
+      summary: "SSL certificate expired"
+      description: |
+        Service: {{ $labels.instance }}
+
+        SSL certificate has expired.
+
+
+# ===================W==========
+# WARNING ALERTS
+# =============================
+
+- name: blackbox-warning
+  rules:
+
+  - alert: BlackboxSlowResponse
+    expr: probe_duration_seconds > 3
+    for: 2m
+    labels:
+      severity: warning
+      team: QTHT
+      environment: production
+    annotations:
+      summary: "Slow response detected"
+      description: |
+        Service: {{ $labels.instance }}
+
+        Response time: {{ printf "%.2f" $value }} seconds
+
+  - alert: BlackboxSSLExpireSoon
+    expr: probe_ssl_earliest_cert_expiry - time() < 86400 * 7
+    for: 1h
+    labels:
+      severity: warning
+      team: QTHT
+      environment: production
+    annotations:
+      summary: "SSL certificate expiring soon"
+      description: |
+        Service: {{ $labels.instance }}
+
+        SSL certificate will expire within 7 days.

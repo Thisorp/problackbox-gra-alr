@@ -1,0 +1,13 @@
+{{ define "telegram.message" }}
+🚨 {{ .CommonLabels.severity | toUpper }} ALERT
+Service: {{ .CommonLabels.instance }}
+Job: {{ .CommonLabels.job }}
+{{ range .Alerts }}
+Status: {{ .Annotations.summary }}
+{{ end }}
+Environment: {{ .CommonLabels.environment }}
+Team: {{ .CommonLabels.team }}
+🔎 Prometheus
+http://monitor.vnpost.vn
+
+{{ end }}

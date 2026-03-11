@@ -74,3 +74,21 @@ modules:
       - send: !!binary AAAACATSFi8= # 0x00, 0x00, 0x00, 0x08, 0x04, 0xD2, 0x16, 0x2F - PostgreSQL SSLRequest
       - expect_bytes: S # 0x53 - Reply will be 'S' if SSL is enabled, and 'N' if it is not.
       - starttls: true
+  zns_ems_403_check:
+    prober: http
+    timeout: 15s
+    http:
+      method: POST
+      preferred_ip_protocol: "ip4"
+
+      headers:
+        Content-Type: application/json
+        apikey: ""   
+
+      body: |
+        {
+          "keywords": ["EM782463103VN"],
+          "user_account": "SYSTEM.CNTT"
+        }
+
+      valid_status_codes: [403]

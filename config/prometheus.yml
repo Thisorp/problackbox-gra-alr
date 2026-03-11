@@ -92,3 +92,22 @@ scrape_configs:
         target_label: instance
       - target_label: __address__
         replacement: blackbox_exporter:9115
+
+  - job_name: 'zns_ems_403'
+    metrics_path: /probe
+    params:
+      module: [zns_ems_403_check]
+
+    static_configs:
+      - targets:
+        - https://gateway.vnpost.vn/prod/ZNSEMS/zns_ems_service/api/admin/item-elastic/getsByFilterZns
+
+    relabel_configs:
+      - source_labels: [__address__]
+        target_label: __param_target
+
+      - source_labels: [__param_target]
+        target_label: instance
+
+      - target_label: __address__
+        replacement: blackbox_exporter:9115   
